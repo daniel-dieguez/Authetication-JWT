@@ -7,6 +7,7 @@ import java.util.List;
 public interface IUserImpl {
 
     public List<UsersModel> findAll();
+    public UsersModel findById(String id_user);
     public UsersModel save(UsersModel usersModel);
     public void delete (UsersModel usersModel);
 }
