@@ -9,6 +9,7 @@ import com.auth.autheti.service.UserService;
 import com.auth.autheti.service.impl.IRoleImpl;
 import com.auth.autheti.service.impl.IUserImpl;
 import jakarta.validation.Valid;
+import jakarta.websocket.server.PathParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,7 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/user")
+@CrossOrigin(origins = "*")
 public class UserController {
 
     @Autowired
@@ -35,7 +37,7 @@ public class UserController {
 
     private Logger logger = LoggerFactory.getLogger(UsersModel.class);
 
-    @GetMapping("/userViews")
+    @GetMapping("/UserViews")
     public ResponseEntity<?> listUser(){
         Map<String, Object> response = new HashMap<>();
 
@@ -101,6 +103,36 @@ public class UserController {
 
     }
 
+
+    @DeleteMapping("/DeleteUser/{id_user}")
+    public ResponseEntity<?> delete(@PathVariable String id_user){
+        Map<String, Object> response = new HashMap<>();
+        try{
+
+            UsersModel usersModel = this.iUserImp.findById(id_user);
+            if(usersModel == null){
+                response.put("mensaje", "El usuario con id".concat(id_user).concat("no existe"));
+                return new ResponseEntity<Map<String,Object>>(response, HttpStatus.NOT_FOUND);
+            }else {
+                this.iUserImp.delete(usersModel);
+                response.put("mensaje","El usuario".concat(id_user).concat("fue eliminado "));
+                response.put("listado", usersModel);
+                logger.info("El miembro fue eliminada con exito");
+                return new ResponseEntity<Map<String,Object>>(response, HttpStatus.OK);
+            }
+
+
+        }catch (CannotCreateTransactionException e){
+        response = this.getTransactionExepcion(response, e);
+        return new ResponseEntity<Map<String, Object>>(response, HttpStatus.SERVICE_UNAVAILABLE);
+
+    }catch (DataAccessException e){
+        response = this.getDataAccessException(response, e);
+        return new ResponseEntity<Map<String, Object>>(response, HttpStatus.SERVICE_UNAVAILABLE);
+
+    }
+
+    }
 
 
 
