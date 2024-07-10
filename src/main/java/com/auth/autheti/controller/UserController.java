@@ -3,6 +3,7 @@ package com.auth.autheti.controller;
 
 import com.auth.autheti.models.RolesModal;
 import com.auth.autheti.models.UsersModel;
+import com.auth.autheti.models.dtos.UserDTO;
 import com.auth.autheti.repository.IRoleRepository;
 import com.auth.autheti.service.UserService;
 import com.auth.autheti.service.impl.IRoleImpl;
@@ -30,7 +31,7 @@ public class UserController {
 
 
     @Autowired
-    private IRoleImpl iRole;
+    private IRoleImpl iRoleImp;
 
     private Logger logger = LoggerFactory.getLogger(UsersModel.class);
 
@@ -57,33 +58,38 @@ public class UserController {
 
 
     @PostMapping("/CreateUser")
-    public ResponseEntity<?>createUser(@Valid @RequestBody UsersModel value, BindingResult result){
+    public ResponseEntity<?>createUser(@Valid @RequestBody UserDTO userDTO, BindingResult result){
         Map<String, Object> response = new HashMap<>();
 
         try{
-            UsersModel modelUser;
-            RolesModal rolesModal = new RolesModal();
 
-            if(modelUser.setRolesModal() == 1){
-                this.iRole.findById(1);
-                rolesModal.setRole_name("ADMIN");
-            } else if (modelUser.setRolesModal() == 2) {
-                this.iRole.findById(2);
-                rolesModal.setRole_name("USER");
-
+            RolesModal rolesModal = iRoleImp.findById(userDTO.getRoleId());
+            if (rolesModal == null) {
+                response.put("mensaje", "El rol especificado no existe.");
+                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
             }
 
-            UsersModel usersModel = new UsersModel();
-        usersModel.setId_user(UUID.randomUUID().toString());
-        usersModel.setName(value.getName());
-        usersModel.setPassword(value.getEmail());
-        usersModel.setEmail(value.getEmail());
-        usersModel.setRolesModal(value.getRolesModal());
-        this.iUserImp.save(usersModel);
+            if (userDTO.getRoleId() == 1) {
+                rolesModal.setRole_name("ADMIN");
+            } else if (userDTO.getRoleId() == 2) {
+                rolesModal.setRole_name("USER");
+            } else {
+                response.put("mensaje", "El id_role especificado no es válido.");
+                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+            }
+
+            UsersModel newUser = new UsersModel();
+        newUser.setId_user(UUID.randomUUID().toString());
+            newUser.setId_user(UUID.randomUUID().toString());
+            newUser.setName(userDTO.getName());
+            newUser.setEmail(userDTO.getEmail());
+            newUser.setPassword(userDTO.getPassword());
+            newUser.setRolesModal(rolesModal);
+        this.iUserImp.save(newUser);
         logger.info("se acaba de creaer un nuevo usuario");
         response.put("mensaje", "Unnuevo usuario fue creado con exito ");
-        response.put("Usuario Creado", usersModel);
-            return new ResponseEntity<Map<String, Object>>(response, HttpStatu s.CREATED);
+        response.put("Usuario Creado", newUser);
+            return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
         }catch (CannotCreateTransactionException e) {
             response.put("mensaje", "Error al crear el usuario: " );
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
