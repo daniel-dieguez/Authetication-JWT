@@ -3,6 +3,7 @@ package com.auth.autheti.service.impl;
 import com.auth.autheti.models.UsersModel;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface IUserImpl {
 

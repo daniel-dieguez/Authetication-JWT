@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.CannotCreateTransactionException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -37,11 +38,10 @@ public class UserController {
 
     private Logger logger = LoggerFactory.getLogger(UsersModel.class);
 
+
     @GetMapping("/UserViews")
     public ResponseEntity<?> listUser(){
         Map<String, Object> response = new HashMap<>();
-
-
         this.logger.debug("iniciando consulta");
         try {
             List<UsersModel> usersModel = this.iUserImp.findAll();
@@ -85,7 +85,6 @@ public class UserController {
             newUser.setId_user(UUID.randomUUID().toString());
             newUser.setName(userDTO.getName());
             newUser.setEmail(userDTO.getEmail());
-            newUser.setPassword(userDTO.getPassword());
             newUser.setRolesModal(rolesModal);
         this.iUserImp.save(newUser);
         logger.info("se acaba de creaer un nuevo usuario");

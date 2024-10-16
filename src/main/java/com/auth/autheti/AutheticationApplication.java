@@ -3,7 +3,7 @@ package com.auth.autheti;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "com.auth.autheti")
 public class AutheticationApplication {
 
 	public static void main(String[] args) {
