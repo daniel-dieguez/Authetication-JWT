@@ -19,6 +19,7 @@ public class SecurityUser implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
+        // Obtener el nombre del rol y agregar el prefijo "ROLE_"
         String roleName = "ROLE_" + usersModel.getRolesModal().getRole_name().toUpperCase();
         return Collections.singletonList(new SimpleGrantedAuthority(roleName));
     }
@@ -32,7 +33,7 @@ public class SecurityUser implements UserDetails {
 
     @Override
     public String getUsername() {
-        return usersModel.getName();
+        return usersModel.getEmail();
     }
 
 

@@ -59,48 +59,8 @@ public class UserController {
         }
 
 
-    @PostMapping("/CreateUser")
-    public ResponseEntity<?>createUser(@Valid @RequestBody UserDTO userDTO, BindingResult result){
-        Map<String, Object> response = new HashMap<>();
 
-        try{
 
-            RolesModal rolesModal = iRoleImp.findById(userDTO.getRoleId());
-            if (rolesModal == null) {
-                response.put("mensaje", "El rol especificado no existe.");
-                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-            }
-
-            if (userDTO.getRoleId() == 1) {
-                rolesModal.setRole_name("ADMIN");
-            } else if (userDTO.getRoleId() == 2) {
-                rolesModal.setRole_name("USER");
-            } else {
-                response.put("mensaje", "El id_role especificado no es válido.");
-                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-            }
-
-            UsersModel newUser = new UsersModel();
-        newUser.setId_user(UUID.randomUUID().toString());
-            newUser.setId_user(UUID.randomUUID().toString());
-            newUser.setName(userDTO.getName());
-            newUser.setEmail(userDTO.getEmail());
-            newUser.setRolesModal(rolesModal);
-        this.iUserImp.save(newUser);
-        logger.info("se acaba de creaer un nuevo usuario");
-        response.put("mensaje", "Unnuevo usuario fue creado con exito ");
-        response.put("Usuario Creado", newUser);
-            return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
-        }catch (CannotCreateTransactionException e) {
-            response.put("mensaje", "Error al crear el usuario: " );
-            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-        }catch (DataAccessException e){
-            response = this.getDataAccessException(response, e);
-            return new ResponseEntity<Map<String, Object>>(response, HttpStatus.SERVICE_UNAVAILABLE);
-
-        }
-
-    }
 
 
     @DeleteMapping("/DeleteUser/{id_user}")

@@ -33,9 +33,6 @@ public class UserService implements IUserImpl {
         return this.iUsersRepo.findById(id_user).orElse(null);
     }
 
-
-
-
     @Override
     public UsersModel save(UsersModel usersModel) {
         usersModel.setPassword(passwordEncoder.encode(usersModel.getPassword()));// Encriptar contraseñas
@@ -46,8 +43,5 @@ public class UserService implements IUserImpl {
     public void delete(UsersModel usersModel) {
         this.iUsersRepo.delete(usersModel);
     }
-
-
-
 
 }

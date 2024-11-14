@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface IUsersRepo extends JpaRepository<UsersModel, String> {
 
-    UsersModel findByName(String name);
+    UsersModel findByEmail(String email);
 
 
 }

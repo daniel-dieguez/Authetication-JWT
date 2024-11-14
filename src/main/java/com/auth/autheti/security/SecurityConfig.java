@@ -5,6 +5,7 @@ import com.auth.autheti.models.SecuModels.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
@@ -17,6 +18,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -46,23 +52,45 @@ public PasswordEncoder passwordEncoder() {
         return authProvider;
     }
 
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(List.of("http://localhost:3000"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("Authorization"));
+        config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+        config.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
+    }
+
+
     @Bean //objeto de espeificacion
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                .csrf(csrf -> csrf.disable())
+                .cors(Customizer.withDefaults()) // CORS centralizado aquí
+                .csrf().disable()
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/public/**").permitAll()
-                        .requestMatchers("/user/UserViews").permitAll()
+                        .requestMatchers("/new/**").permitAll()
+                        .requestMatchers("/user/**").authenticated()
                         .requestMatchers("/v1/home").authenticated()
-                        .requestMatchers("/v1/admin").hasAnyAuthority("ADMIN")
+                        .requestMatchers("/v1/admin").hasAnyAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated()
                 )
-                .userDetailsService(userDetailsServiceImp)  // Usar tu servicio para cargar los usuarios
-                .formLogin(Customizer.withDefaults())    // Habilitar el formulario de login por defecto
+                .userDetailsService(userDetailsServiceImp)
+                .formLogin(form -> form
+                        .usernameParameter("email")
+                        .passwordParameter("password")
+                        .defaultSuccessUrl("/v1/home", true))// Usar tu servicio para cargar los usuarios
+                //.formLogin(Customizer.withDefaults())    // Habilitar el formulario de login por defecto
                 .build();
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) {//encriptador de contraseñas
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         String rawPassword = "12345";
         String encodedPassword = encoder.encode(rawPassword);
