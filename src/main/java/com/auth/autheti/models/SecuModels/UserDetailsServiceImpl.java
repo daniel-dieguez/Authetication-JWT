@@ -22,7 +22,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     private IUsersRepo iUsersRepo;
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException { // variable de verificiacion
         UsersModel usersModel = iUsersRepo.findByEmail(email);
         if (usersModel == null) {
             throw new UsernameNotFoundException("No existe el usuario");

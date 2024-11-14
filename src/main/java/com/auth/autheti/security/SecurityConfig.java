@@ -53,7 +53,7 @@ public PasswordEncoder passwordEncoder() {
     }
 
     @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
+    public CorsConfigurationSource corsConfigurationSource() { //Necesary to entry password
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of("http://localhost:3000"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
@@ -90,6 +90,7 @@ public PasswordEncoder passwordEncoder() {
                 .build();
     }
 
+    //function to add
     public static void main(String[] args) {//encriptador de contraseñas
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         String rawPassword = "12345";

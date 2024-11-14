@@ -28,12 +28,12 @@ public class SecurityUser implements UserDetails {
 
     @Override
     public String getPassword() {
-        return usersModel.getPassword();
+        return usersModel.getPassword(); // de donde optendra la variable password
     }
 
     @Override
     public String getUsername() {
-        return usersModel.getEmail();
+        return usersModel.getEmail(); //de donde obtendra la variable "user" en este caso es gmail
     }
 
 
